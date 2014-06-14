@@ -7,10 +7,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import com.dev.node.NoteModel;
-import com.dev.server.data.impl.DataSource;
 import com.dev.server.data.model.DataSourceModel;
 
-public class MultiServerThread extends Thread {
+class MultiServerThread extends Thread {
 	private Socket socket = null;
 	private DataSourceModel dataSourceModel;
 	private String protocol;
@@ -19,7 +18,11 @@ public class MultiServerThread extends Thread {
 	public MultiServerThread(Socket socket) {
 		super("MultiServerThread");
 		this.socket = socket;
+	}
 
+	public void setDataSourceModel(DataSourceModel dataSourceModel) {
+		System.err.println("dataSourceModel is binded");
+		this.dataSourceModel = dataSourceModel;
 	}
 
 	public void run() {
@@ -28,12 +31,12 @@ public class MultiServerThread extends Thread {
 				ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());) {
 			protocol = (String) ois.readObject();
 			if (protocol.equals("get object")) {
-				dataSourceModel = new DataSource();
 				storedNodes = dataSourceModel.getStoredNodes();
 				oos.writeObject(storedNodes);
 				socket.close();
 			} else if (protocol.equals("push object")) {
 				storedNodes = (ArrayList<NoteModel>) ois.readObject();
+				dataSourceModel.setNodes(storedNodes);
 			} else
 				throw new IllegalProtocolException();
 		} catch (IOException e) {

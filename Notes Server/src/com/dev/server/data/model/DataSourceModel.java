@@ -8,4 +8,8 @@ public interface DataSourceModel {
 
 	ArrayList<NoteModel> getStoredNodes();
 
+	void setNodes(ArrayList<NoteModel> storedNodes);
+
+	void deleteAllNodes();
+
 }
